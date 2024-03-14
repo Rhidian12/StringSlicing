@@ -5,7 +5,7 @@
 
 TEST_CASE("Testing slice(size_t start, size_t end)")
 {
-	const std::string source{ "Hello World!" };
+	const std::string source{ "Hello World!" }; // source.size() == 12
 
 	REQUIRE(stdproposal::slice(source, 0, 5) == "Hello");
 	REQUIRE(stdproposal::slice(source, 6, 11) == "World");
@@ -20,6 +20,36 @@ TEST_CASE("Testing slice(size_t start, size_t end)")
 	REQUIRE(stdproposal::slice(source, 0, 0) == "");
 	REQUIRE(stdproposal::slice(source, 6, 6) == "");
 
+	REQUIRE(stdproposal::slice(source, 5, 0) == "");
+	REQUIRE(stdproposal::slice(source, 5, 4) == "");
+	REQUIRE(stdproposal::slice(source, 11, 10) == "");
+
 	REQUIRE_THROWS_AS(stdproposal::slice(source, 12, 18), std::out_of_range);
 	REQUIRE_THROWS_AS(stdproposal::slice(source, 15, 18), std::out_of_range);
+}
+
+TEST_CASE("Testing slice(size_t start, size_t end, size_t step)")
+{
+	const std::string source{ "Hello World!" }; // source.size() == 12
+
+	REQUIRE(stdproposal::slice(source, 0, 5, 0) == "Hello");
+	REQUIRE(stdproposal::slice(source, 0, 5, 1) == "Hello");
+	REQUIRE(stdproposal::slice(source, 6, 11, 0) == "World");
+	REQUIRE(stdproposal::slice(source, 6, 11, 1) == "World");
+
+	REQUIRE(stdproposal::slice(source, 0, 12, 2) == "HloWrd");
+	REQUIRE(stdproposal::slice(source, 0, 12, 3) == "HlWl");
+	REQUIRE(stdproposal::slice(source, 0, 12, 12) == "H");
+	REQUIRE(stdproposal::slice(source, 3, 6, 3) == "l");
+
+	REQUIRE(stdproposal::slice(source, 6, 3, 3) == "");
+	REQUIRE(stdproposal::slice(source, 6, 3, 1) == "");
+	REQUIRE(stdproposal::slice(source, 6, 3, 0) == "");
+	REQUIRE(stdproposal::slice(source, 8, 5, 3) == "");
+
+	REQUIRE_THROWS_AS(stdproposal::slice(source, 0, 5, 7), std::out_of_range);
+	REQUIRE_THROWS_AS(stdproposal::slice(source, 0, 5, 13), std::out_of_range);
+
+	REQUIRE_THROWS_AS(stdproposal::slice(source, 13, 12, 3), std::out_of_range);
+	REQUIRE_THROWS_AS(stdproposal::slice(source, 12, 15, 0), std::out_of_range);
 }

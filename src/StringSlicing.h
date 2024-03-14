@@ -22,6 +22,11 @@ namespace stdproposal
             end = source.size();
         }
 
+        if (end < start)
+        {
+            end = start;
+        }
+
         size_t distance{ end - start };
         if (distance == 0)
         {
@@ -34,14 +39,33 @@ namespace stdproposal
     // 2
     std::string slice(const std::string& source, size_t start, size_t end, size_t step)
     {
-        if (start > source.size())
+        if (start >= source.size())
         {
             throw std::out_of_range{ "slice() > Start is out of range" };
+        }
+        else if (step > end || step > source.size())
+        {
+            throw std::out_of_range{ "slice() > step is out of range" };
         }
 
         if (end >= source.size())
         {
             end = source.size();
+        }
+
+        if (end < start)
+        {
+            end = start;
+        }
+
+        if (step == 0)
+        {
+            step = 1;
+        }
+
+        if (step > end)
+        {
+            step = end;
         }
 
         std::string slicedString{};
