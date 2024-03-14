@@ -53,3 +53,15 @@ TEST_CASE("Testing slice(size_t start, size_t end, size_t step)")
 	REQUIRE_THROWS_AS(stdproposal::slice(source, 13, 12, 3), std::out_of_range);
 	REQUIRE_THROWS_AS(stdproposal::slice(source, 12, 15, 0), std::out_of_range);
 }
+
+TEST_CASE("Testing first(size_t count)")
+{
+	const std::string source{ "Hello World!" }; // source.size() == 12
+
+	REQUIRE(stdproposal::first(source, 3) == "Hel");
+	REQUIRE(stdproposal::first(source, 7) == "Hello W");
+	REQUIRE(stdproposal::first(source, 12) == "Hello World!");
+	REQUIRE(stdproposal::first(source, 16) == "Hello World!");
+
+	REQUIRE(stdproposal::first(source, 0) == "");
+}
