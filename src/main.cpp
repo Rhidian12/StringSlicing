@@ -58,10 +58,24 @@ TEST_CASE("Testing first(size_t count)")
 {
 	const std::string source{ "Hello World!" }; // source.size() == 12
 
+	REQUIRE(stdproposal::first(source, 1) == "H");
 	REQUIRE(stdproposal::first(source, 3) == "Hel");
 	REQUIRE(stdproposal::first(source, 7) == "Hello W");
 	REQUIRE(stdproposal::first(source, 12) == "Hello World!");
 	REQUIRE(stdproposal::first(source, 16) == "Hello World!");
 
 	REQUIRE(stdproposal::first(source, 0) == "");
+}
+
+TEST_CASE("Testing last(size_t count)")
+{
+	const std::string source{ "Hello World!" }; // source.size() == 12
+
+	REQUIRE(stdproposal::last(source, 1) == "!");
+	REQUIRE(stdproposal::last(source, 3) == "ld!");
+	REQUIRE(stdproposal::last(source, 7) == " World!");
+	REQUIRE(stdproposal::last(source, 12) == "Hello World!");
+	REQUIRE(stdproposal::last(source, 18) == "Hello World!");
+
+	REQUIRE(stdproposal::last(source, 0) == "");
 }
