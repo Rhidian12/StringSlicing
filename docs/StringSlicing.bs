@@ -9,6 +9,7 @@ Editor: rhidiandewit@gmail.com
 Abstract: Parsing in C++ has improved a lot over the years with the introduction of `std::basic_string::contains()`, `std::basic_string::starts_with()` and `std::basic_string::ends_with()`.<br>One thing that misses in this list of additions is *string slicing* where the user can select a part of a string with a *start index* and *end index*, as opposed to a *start index* and a *count*.
 Markup Shorthands: markdown yes, css no
 Boilerplate: omit conformance, copyright no
+Default Highlight: cpp
 </pre>
 
 Table of Contents {#tableofcontents}
@@ -28,16 +29,18 @@ Table of Contents {#tableofcontents}
 
 Changelog {#changelog}
 ========
-## \[R4]{#r4}
-Removed `std::basic_string::slice(size_t start, size_t end, size_t step)` since with the addition of [std::stride_view](https://wg21.link/p1899) it will no longer be necessary.<br>
+## R4 ## {#r4}
+- Removed `std::basic_string::slice(size_t start, size_t end, size_t step)` since with the addition of [std::stride_view](https://wg21.link/p1899) it will no longer be necessary.<br>
+- Added proposed wording
+- Made functions `constexpr`, `const` and `noexcept` (where applicable)
 
-## \[R3]{#r3}
+## R3 ## {#r3}
 Added unit tests to a [GitHub project](https://github.com/Rhidian12/StringSlicing).<br>
 
-## \[R2]{#r2}
+## R2 ## {#r2}
 `std::basic_string::slice()` now throws `std::out_of_range` when `start >= size()`.<br>
 
-## \[R1]{#r1}
+## R1 ## {#r1}
 Removed default parameter from `std::basic_string::slice(size_t start, size_t end, size_t step)`.<br>
 
 Motivation and Scope {#motivation}
@@ -51,9 +54,9 @@ The functions I propose to add to `std::basic_string` are the following:
 ```
 namespace std
 {
-	/* 1. */ basic_string_view	basic_string::slice(size_t start, size_t end);
-	/* 2. */ basic_string_view	basic_string::first(size_t count);
-	/* 3. */ basic_string_view	basic_string::last(size_t count);
+	/* 1. */ constexpr basic_string_view	basic_string::slice(size_t start, size_t end) const;
+	/* 2. */ constexpr basic_string_view	basic_string::first(size_t count) const noexcept;
+	/* 3. */ constexpr basic_string_view	basic_string::last(size_t count) const noexcept;
 }
 ```
 
@@ -91,8 +94,22 @@ These are easily implemented functions and depend on specific vendor-implementat
 
 Proposed Wording {#proposedwording}
 ========
-## [Addition to `<string>`]{#additiontostring}
-Add the following to
+## Addition to `<string>` ## {#additiontostring}
+Add the following to 23.4.3.1 [basic.string.general](https://eel.is/c++draft/basic.string.general):<br>
+```
+// [...]
+namespace std {
+	// [...]
+	
+	// [string.ops], string operations
+	// [...]
+	constexpr bool contains(const charT* x) const;
+	
+	constexpr basic_string_view<charT, traits> slice(size_t start, size_t end) const;
+	constexpr basic_string_view<charT, traits> first(size_t count) const noexcept;
+	constexpr basic_string_view<charT, traits> last(size_t count) const noexcept;
+}
+```
 
 Acknowledgements {#acknowledgements}
 ========
