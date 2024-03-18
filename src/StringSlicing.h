@@ -31,43 +31,6 @@ namespace stdproposal
     }
 
     // 2
-    std::string slice(const std::string& source, size_t start, size_t end, size_t step)
-    {
-        if (start >= source.size())
-        {
-            throw std::out_of_range{ "slice() > Start is out of range" };
-        }
-        else if (step > end || step > source.size())
-        {
-            throw std::out_of_range{ "slice() > step is out of range" };
-        }
-
-        if (end > source.size())
-        {
-            end = source.size();
-        }
-
-        if (end < start)
-        {
-            end = start;
-        }
-
-        if (step == 0)
-        {
-            step = 1;
-        }
-
-        std::string slicedString{};
-
-        for (size_t i{ start }; i < end; i += step)
-        {
-            slicedString.push_back(source[i]);
-        }
-
-        return slicedString;
-    }
-
-    // 3
     std::string_view first(const std::string& source, size_t count)
     {
         if (count >= source.size())
@@ -78,7 +41,7 @@ namespace stdproposal
         return std::string_view(source.data(), count);
     }
 
-    // 4
+    // 3
     std::string_view last(const std::string& source, size_t count)
     {
         if (count >= source.size())
