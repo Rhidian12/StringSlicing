@@ -24,7 +24,10 @@ Table of Contents {#tableofcontents}
 - [Design Decisions](#design)
 - [Technical Specifications](#technical)
 - [Proposed Wording](#proposedwording)
-	- [Addition to std::string](#additiontostring)
+	- <span style="font-family:Georgia, serif;">[Addition to string](#additiontostring)</span>
+	- <span style="font-family:Georgia, serif;">[std::basic_string::slice](#basicstringslice)</span>
+	- <span style="font-family:Georgia, serif;">[std::basic_string::first](#basicstringfirst)</span>
+	- <span style="font-family:Georgia, serif;">[std::basic_string::last](#basicstringlast)</span>
 - [Acknowledgements](#acknowledgements)
 
 Changelog {#changelog}
@@ -110,6 +113,27 @@ namespace std {
 	constexpr basic_string_view<charT, traits> last(size_t count) const noexcept;
 }
 ```
+
+## `std::basic_string::slice` ## {#basicstringslice}
+Add the following subclause to 23.4.3.8 [string.ops](https://eel.is/c++draft/string.ops):<br>
+- 23.4.3.?:			`basic_string::slice`			`[string.slice]`
+	- `constexpr basic_string_view<charT, traits> slice(size_t start, size_t end) const;`
+		1. *Effects*: Equivalent to:<br>
+			`return basic_string_view<charT, traits>(data() + start, end - start);`
+
+## `std::basic_string::first` ## {#basicstringfirst}
+Add the following subclause to 23.4.3.8 [string.ops](https://eel.is/c++draft/string.ops):<br>
+- 23.4.3.?:			`basic_string::first`			`[string.first]`
+	- `constexpr basic_string_view<charT, traits> first(size_t count) const noexcept;`
+		1. *Effects*: Equivalent to:<br>
+			`return basic_string_view<charT, traits>(data(), count);`
+
+## `std::basic_string::last` ## {#basicstringlast}
+Add the following subclause to 23.4.3.8 [string.ops](https://eel.is/c++draft/string.ops):<br>
+- 23.4.3.?:			`basic_string::last`			`[string.last]`
+	- `constexpr basic_string_view<charT, traits> last(size_t count) const noexcept;`
+		1. *Effects*: Equivalent to:<br>
+			`return basic_string_view<charT, traits>(data() + (size() - count), count);`
 
 Acknowledgements {#acknowledgements}
 ========

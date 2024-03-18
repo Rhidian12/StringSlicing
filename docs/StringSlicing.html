@@ -1490,7 +1490,7 @@ Possible extra rowspan handling
 </style>
   <meta content="Bikeshed version d765c696b, updated Fri Mar 8 15:58:52 2024 -0800" name="generator">
   <link href="TBA" rel="canonical">
-  <meta content="78bd6b92a18736aa168ea9493bf7971622b0ea7b" name="revision">
+  <meta content="df68bf35f1955f2c8590e01ac5939d39a3925b42" name="revision">
   <meta content="dark light" name="color-scheme">
 <style>/* Boilerplate: style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
@@ -2054,6 +2054,9 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
      <a href="#proposedwording"><span class="secno">7</span> <span class="content">Proposed Wording</span></a>
      <ol class="toc">
       <li><a href="#additiontostring"><span class="secno">7.1</span> <span class="content">Addition to <code class="highlight"><c- o>&lt;</c-><c- n>string</c-><c- o>></c-></code></span></a>
+      <li><a href="#basicstringslice"><span class="secno">7.2</span> <span class="content"><code class="highlight"><c- n>std</c-><c- o>::</c-><c- n>basic_string</c-><c- o>::</c-><c- n>slice</c-></code></span></a>
+      <li><a href="#basicstringfirst"><span class="secno">7.3</span> <span class="content"><code class="highlight"><c- n>std</c-><c- o>::</c-><c- n>basic_string</c-><c- o>::</c-><c- n>first</c-></code></span></a>
+      <li><a href="#basicstringlast"><span class="secno">7.4</span> <span class="content"><code class="highlight"><c- n>std</c-><c- o>::</c-><c- n>basic_string</c-><c- o>::</c-><c- n>last</c-></code></span></a>
      </ol>
     <li><a href="#acknowledgements"><span class="secno">8</span> <span class="content">Acknowledgements</span></a>
    </ol>
@@ -2085,7 +2088,13 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
      <p><a href="#proposedwording">Proposed Wording</a></p>
      <ul>
       <li data-md>
-       <p><a href="#additiontostring">Addition to std::string</a></p>
+       <p><span style="font-family:Georgia, serif;"><a href="#additiontostring">Addition to string</a></span></p>
+      <li data-md>
+       <p><span style="font-family:Georgia, serif;"><a href="#basicstringslice">std::basic_string::slice</a></span></p>
+      <li data-md>
+       <p><span style="font-family:Georgia, serif;"><a href="#basicstringfirst">std::basic_string::first</a></span></p>
+      <li data-md>
+       <p><span style="font-family:Georgia, serif;"><a href="#basicstringlast">std::basic_string::last</a></span></p>
      </ul>
     <li data-md>
      <p><a href="#acknowledgements">Acknowledgements</a></p>
@@ -2187,6 +2196,48 @@ Python’s string-slicing is very graceful and easy-to-use, but C++ does not sup
   <c- k>constexpr</c-> <c- n>basic_string_view</c-><c- o>&lt;</c-><c- n>charT</c-><c- p>,</c-> <c- n>traits</c-><c- o>></c-> <c- n>last</c-><c- p>(</c-><c- b>size_t</c-> <c- n>count</c-><c- p>)</c-> <c- k>const</c-> <c- k>noexcept</c-><c- p>;</c->
 <c- p>}</c->
 </pre>
+   <h3 class="heading settled" data-level="7.2" id="basicstringslice"><span class="secno">7.2. </span><span class="content"><code class="highlight"><c- n>std</c-><c- o>::</c-><c- n>basic_string</c-><c- o>::</c-><c- n>slice</c-></code></span><a class="self-link" href="#basicstringslice"></a></h3>
+    Add the following subclause to 23.4.3.8 <a href="https://eel.is/c++draft/string.ops">string.ops</a>:<br> 
+   <ul>
+    <li data-md>
+     <p>23.4.3.?: <code class="highlight"><c- n>basic_string</c-><c- o>::</c-><c- n>slice</c-></code> <code class="highlight"><c- p>[</c-><c- n>string</c-><c- p>.</c-><c- n>slice</c-><c- p>]</c-></code></p>
+     <ul>
+      <li data-md>
+       <p><code class="highlight"><c- k>constexpr</c-> <c- n>basic_string_view</c-><c- o>&lt;</c-><c- n>charT</c-><c- p>,</c-> <c- n>traits</c-><c- o>></c-> <c- n>slice</c-><c- p>(</c-><c- b>size_t</c-> <c- n>start</c-><c- p>,</c-> <c- b>size_t</c-> <c- n>end</c-><c- p>)</c-> <c- k>const</c-><c- p>;</c-></code></p>
+       <ol>
+        <li data-md>
+         <p><em>Effects</em>: Equivalent to:<br> <code class="highlight"><c- k>return</c-> <c- n>basic_string_view</c-><c- o>&lt;</c-><c- n>charT</c-><c- p>,</c-> <c- n>traits</c-><c- o>></c-><c- p>(</c-><c- n>data</c-><c- p>()</c-> <c- o>+</c-> <c- n>start</c-><c- p>,</c-> <c- n>end</c-> <c- o>-</c-> <c- n>start</c-><c- p>);</c-></code></p>
+       </ol>
+     </ul>
+   </ul>
+   <h3 class="heading settled" data-level="7.3" id="basicstringfirst"><span class="secno">7.3. </span><span class="content"><code class="highlight"><c- n>std</c-><c- o>::</c-><c- n>basic_string</c-><c- o>::</c-><c- n>first</c-></code></span><a class="self-link" href="#basicstringfirst"></a></h3>
+    Add the following subclause to 23.4.3.8 <a href="https://eel.is/c++draft/string.ops">string.ops</a>:<br> 
+   <ul>
+    <li data-md>
+     <p>23.4.3.?: <code class="highlight"><c- n>basic_string</c-><c- o>::</c-><c- n>first</c-></code> <code class="highlight"><c- p>[</c-><c- n>string</c-><c- p>.</c-><c- n>first</c-><c- p>]</c-></code></p>
+     <ul>
+      <li data-md>
+       <p><code class="highlight"><c- k>constexpr</c-> <c- n>basic_string_view</c-><c- o>&lt;</c-><c- n>charT</c-><c- p>,</c-> <c- n>traits</c-><c- o>></c-> <c- n>first</c-><c- p>(</c-><c- b>size_t</c-> <c- n>count</c-><c- p>)</c-> <c- k>const</c-> <c- k>noexcept</c-><c- p>;</c-></code></p>
+       <ol>
+        <li data-md>
+         <p><em>Effects</em>: Equivalent to:<br> <code class="highlight"><c- k>return</c-> <c- n>basic_string_view</c-><c- o>&lt;</c-><c- n>charT</c-><c- p>,</c-> <c- n>traits</c-><c- o>></c-><c- p>(</c-><c- n>data</c-><c- p>(),</c-> <c- n>count</c-><c- p>);</c-></code></p>
+       </ol>
+     </ul>
+   </ul>
+   <h3 class="heading settled" data-level="7.4" id="basicstringlast"><span class="secno">7.4. </span><span class="content"><code class="highlight"><c- n>std</c-><c- o>::</c-><c- n>basic_string</c-><c- o>::</c-><c- n>last</c-></code></span><a class="self-link" href="#basicstringlast"></a></h3>
+    Add the following subclause to 23.4.3.8 <a href="https://eel.is/c++draft/string.ops">string.ops</a>:<br> 
+   <ul>
+    <li data-md>
+     <p>23.4.3.?: <code class="highlight"><c- n>basic_string</c-><c- o>::</c-><c- n>last</c-></code> <code class="highlight"><c- p>[</c-><c- n>string</c-><c- p>.</c-><c- n>last</c-><c- p>]</c-></code></p>
+     <ul>
+      <li data-md>
+       <p><code class="highlight"><c- k>constexpr</c-> <c- n>basic_string_view</c-><c- o>&lt;</c-><c- n>charT</c-><c- p>,</c-> <c- n>traits</c-><c- o>></c-> <c- n>last</c-><c- p>(</c-><c- b>size_t</c-> <c- n>count</c-><c- p>)</c-> <c- k>const</c-> <c- k>noexcept</c-><c- p>;</c-></code></p>
+       <ol>
+        <li data-md>
+         <p><em>Effects</em>: Equivalent to:<br> <code class="highlight"><c- k>return</c-> <c- n>basic_string_view</c-><c- o>&lt;</c-><c- n>charT</c-><c- p>,</c-> <c- n>traits</c-><c- o>></c-><c- p>(</c-><c- n>data</c-><c- p>()</c-> <c- o>+</c-> <c- p>(</c-><c- n>size</c-><c- p>()</c-> <c- o>-</c-> <c- n>count</c-><c- p>),</c-> <c- n>count</c-><c- p>);</c-></code></p>
+       </ol>
+     </ul>
+   </ul>
    <h2 class="heading settled" data-level="8" id="acknowledgements"><span class="secno">8. </span><span class="content">Acknowledgements</span><a class="self-link" href="#acknowledgements"></a></h2>
     The author thanks both Zhihao Yuan and Nathaniel Rupprecht and many others for their suggestions to this proposal. 
   </main>
