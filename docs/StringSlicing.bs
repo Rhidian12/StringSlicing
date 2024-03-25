@@ -1,7 +1,7 @@
 <pre class='metadata'>
 Title: DOCUMENT NUMBER? Adding string-slicing to C++
 Shortname: String-slicing in C++
-Level: 3
+Level: 6
 Status: iso/D
 Group: EWG
 URL: TBA
@@ -15,6 +15,7 @@ Default Highlight: cpp
 Table of Contents {#tableofcontents}
 ========
 - [Changelog](#changelog)
+	- \[R6](#r6)
 	- \[R5](#r5)
 	- \[R4](#r4)
 	- \[R3](#r3)
@@ -22,18 +23,26 @@ Table of Contents {#tableofcontents}
 	- \[R1](#r1)
 - [Motivation and Scope](#motivation)
 - [Impact on the Standard](#impact)
-- [Design Decisions](#design)
 - [Technical Specifications](#technical)
 - [Proposed Wording](#proposedwording)
-	- <span style="font-family:Georgia, serif;">[std::basic_string::operator](#basicstringoperatoraccess)</span>
 	- <span style="font-family:Georgia, serif;">[Addition to string](#additiontostring)</span>
-	- <span style="font-family:Georgia, serif;">[std::basic_string::slice](#basicstringslice)</span>
-	- <span style="font-family:Georgia, serif;">[std::basic_string::first](#basicstringfirst)</span>
-	- <span style="font-family:Georgia, serif;">[std::basic_string::last](#basicstringlast)</span>
+	- <span style="font-family:Georgia, serif;">[std::basic_string::subview](#basicstringsubview)</span>
+	- <span style="font-family:Georgia, serif;">[Addition to string_view](#additiontostringview)</span>
+	- <span style="font-family:Georgia,	serif;">[std:basic_string_view::subview](#basicstringviewsubview)</span>
 - [Acknowledgements](#acknowledgements)
 
 Changelog {#changelog}
 ========
+## R6 ## {#r6}
+- Remove multi-indexed operator[] for conformity reasons with matrices and other data structures
+- Adjust proposed wording
+- Adjust Motivation and Scope
+- Adjust Impact on the Standard
+- Remove `first(n)` and `last(n)`. These will be added in a different paper.
+- Removed Design Decisions
+- Added `.subview()` also to `std::basic_string_view`
+- Adjust function name from `slice()` to `subview()`
+
 ## R5 ## {#r5}
 - Added multi-indexed operator[] for unsafe variant of `std::string::slice(size_t start, size_t end)`
 - Adjust proposed wording
@@ -57,58 +66,31 @@ Motivation and Scope {#motivation}
 Parsing and string manipulation in C++ used to be very cumbersome, with seemingly basic and trivial methods missing from `std::basic_string`. The introduction of C++20 and C++23 resolved some of these issues by adding the above listed utility functions.
 I believe we can make string manipulation in C++ even better by adding more of these utility functions to `std::basic_string`, and one option I always miss, that is present in other programming languages (such as Python), is *string-slicing*.
 Python's string-slicing is very graceful and easy-to-use, but C++ does not support that syntax.<br>
-Instead, I propose to add several functions to `std::basic_string` to emulate string-slicing.<br>
-The functions I propose to add to `std::basic_string` are the following:
-
-```
-namespace std
-{
-	/* 1. */ constexpr basic_string_view	basic_string::operator[](size_t start, size_t end) const;
-	/* 2. */ constexpr basic_string_view	basic_string::slice(size_t start, size_t end) const;
-	/* 3. */ constexpr basic_string_view	basic_string::first(size_t count) const noexcept;
-	/* 4. */ constexpr basic_string_view	basic_string::last(size_t count) const noexcept;
-}
-```
+Instead, I propose to add a `subview()` function to `std::basic_string` and `std::string_view` to emulate string-slicing.<br>
 
 Impact on the Standard {#impact}
 ========
 Since these are only trivial functions requiring no major changes to the language or changes to existing API, the impact of this proposal on the standard is minimal.<br>
 These functions can already be implemented in the current version of C++23 without any extra changes.<br>
+
+In my opinion, teachability is not a problem. There might be some beginners who might be confused by the existance of `.subview()` in addition to `.substr()` and wonder why 2 almost identical functions exist.
+Although, this is true, and `.subview()` adds no new functionality over `.substr()`, it does add another option for programmers doing string manipulation that might be more intuitive to some than `.substr(start, count)`.
+
+On the topic of confusing functions, the C++ standard library is full of similar functions that could make teachability worse (`std::begin()` vs `.begin()`), but are left in for compatibility reasons.<br>
+I think the teachability impact of `.subview()` is very minor, and adds an alternative for people coming from other languages (Rust, Python, ...) where string-slicing works in the way of `(start, end)`.
+
 Implementation will be left up to the vendor of course, but since these are trivial functions, we can provide a "template" implementation.
-
-Design Decisions {#design}
-========
-There is a choice in whether a `std::basic_string` is returned, or a `std::basic_string_view` is returned by these new utility functions. <br>
-It is best for these functions to return `std::basic_string_view` since:
-1. These functions will most often be used to find something in a string, often not requiring a new dynamic allocation to be made.
-2. `std::basic_string::contains()`, `std::basic_string::starts_with()` and `std::basic_string::ends_with()` all take a `std::basic_string_view` as a parameter. Therefore, the return value of the proposed functions matching up with these is a benefit.
-3. *If* the user wants a `std::basic_string` instead of a `std::basic_string_view`, they can always construct a `std::basic_string`.<br>
-
-C++23 introduced `operator[]` with any number of subscripts [cppreference here](https://en.cppreference.com/w/cpp/language/operators#Array_subscript_operator).<br>
-Using this technique, we can very closely mimic what Python does with their string slicing. This does raise the question if `std::basic_string::slice()` is still useful, but in my opinion it can serve as a the safe variant of the unsafe `operator[](size_t start, size_t end)` like `.at(size_t pos)` is the safe variant of the unsafe `operator[](size_t pos)`.
 
 Technical Specifications {#technical}
 ========
-1. `std::basic_string::operator[]` takes 2 parameters: `size_t start` and `size_t end` and returns a `std::basic_string_view`.
-	- `start` is the starting index (inclusive) of where to start the slice.
-		- There is no guarantee of safety when `start >= size()`.
-	- `end` is the ending index (exclusive) of where to end the slice.
-		- There is no guarantee of safety when `end > size()`
-		- There is no guarantee of safety when `end < start`
-2. `std::basic_string::slice()` takes 2 parameters: `size_t start` and `size_t end` and returns a `std::basic_string_view`.
+1. `std::basic_string::slice()` takes 2 parameters: `size_t start` and `size_t end` and returns a `std::basic_string_view`.
 	- `start` is the starting index (inclusive) of where to start the slice.
 		- `std::out_of_range` is thrown when `start >= size()`.
 	- `end` is the ending index (exclusive) of where to end the slice.
 		- if `end > size()` then `end` will be set to `size()`
 		- if `end < start` then `end` will be set to `start`
-3. `std::basic_string::first()` takes 1 parameter: `size_t count` and returns a `std::basic_string_view`.
-	- `count` is the amount of characters to be included (counting from index 0) in the slice.
-		- if `count >= size()` then `count` will be set to `size()`.
-4. `std::basic_string::last()` takes 1 parameter: `size_t count` and returns a `std::basic_string_view`.
-	- `count` is the amount of characters to be included (counting from the last index) in the slice.
-		- if `count >= size()` then `count` will be set to `size()`.
 
-These are easily implemented functions and depend on specific vendor-implementation of `std::basic_string`, but I have provided [unit tests](https://github.com/Rhidian12/StringSlicing/blob/main/src/main.cpp) and [sample implementations](https://github.com/Rhidian12/StringSlicing/blob/main/src/StringSlicing.h) [here](https://github.com/Rhidian12/StringSlicing).
+These are easily implemented functions and depend on specific vendor-implementation of `std::basic_string` and `std::basic_string_view`, but I have provided [unit tests](https://github.com/Rhidian12/StringSlicing/blob/main/src/main.cpp) and [sample implementations](https://github.com/Rhidian12/StringSlicing/blob/main/src/StringSlicing.h) [here](https://github.com/Rhidian12/StringSlicing).
 
 
 Proposed Wording {#proposedwording}
@@ -124,42 +106,44 @@ namespace std {
 	// [...]
 	constexpr bool contains(const charT* x) const;
 	
-	constexpr basic_string_view<charT, traits> operator[](size_t start, size_t end) const noexcept;
-	constexpr basic_string_view<charT, traits> slice(size_t start, size_t end) const;
-	constexpr basic_string_view<charT, traits> first(size_t count) const noexcept;
-	constexpr basic_string_view<charT, traits> last(size_t count) const noexcept;
+	constexpr basic_string subview(size_t start, size_t end) const;
 }
 ```
 
-## `std::basic_string::operator[]` ## {#basicstringoperatoraccess}
+## `std::basic_string::subview` ## {#basicstringsubview}
 Add the following subclause to 23.4.3.8 [string.ops](https://eel.is/c++draft/string.ops):<br>
-- 23.4.3.?:			`basic_string::operator[]`			`[string.slice]`
-	- `constexpr basic_string_view<charT, traits> operator[](size_t start, size_t end) const noexcept;`
-		1. *Effects*: Equivalent to:<br>
-			`return basic_string_view<charT, traits>(data() + start, end);`
+- 23.4.3.?:			`basic_string::subview`			`[string.subview]`
+	- `constexpr basic_string<charT, traits> subview(size_t start, size_t end) const;`
+		1. *Effects*: Determines the effective length `xlen` of the string to be returned as `std::max(std::min(end, size()), start)`.<br>
+			Returns the characters in the range `[data() + start, data() + xlen);`
+		2. *Returns*: `basic_string<charT, traits>(data() + start, end)`
+		3. *Throws*: `out_of_range` if `start >= size()`
 
-## `std::basic_string::slice` ## {#basicstringslice}
-Add the following subclause to 23.4.3.8 [string.ops](https://eel.is/c++draft/string.ops):<br>
-- 23.4.3.?:			`basic_string::slice`			`[string.slice]`
-	- `constexpr basic_string_view<charT, traits> slice(size_t start, size_t end) const;`
+
+## Addition to `<string_view>` ## {#additiontostringview}
+Add the following to 23.3.3.1 [string.view.template.general](https://eel.is/c++draft/string.view.template.general):<br>
+```
+namespace std {
+	// [...]
+	
+	// [string.ops], string operations
+	// [...]
+	constexpr basic_string_view substr(size_type pos = 0,
+										size_type n = npos) const;       // freestanding-deleted	
+									   
+	constexpr basic_string_view subview(size_t start, size_t end) const;
+}
+```
+
+## `std::basic_string_view::subview` ## {#basicstringviewsubview}
+Add the following subclause to 23.3.3.8 [string.view.ops](https://eel.is/c++draft/string.view.ops):<br>
+- 23.4.3.?:			`basic_string_view::subview`			`[string.view.subview]`
+	- `constexpr basic_string_view<charT, traits> subview(size_t start, size_t end) const;`
 		1. *Effects*: Determines the effective length `xlen` of the string to be returned as `std::max(std::min(end, size()), start)`.<br>
 			Returns the characters in the range `[data() + start, data() + xlen);`
 		2. *Returns*: `basic_string_view<charT, traits>(data() + start, end)`
 		3. *Throws*: `out_of_range` if `start >= size()`
-
-## `std::basic_string::first` ## {#basicstringfirst}
-Add the following subclause to 23.4.3.8 [string.ops](https://eel.is/c++draft/string.ops):<br>
-- 23.4.3.?:			`basic_string::first`			`[string.first]`
-	- `constexpr basic_string_view<charT, traits> first(size_t count) const noexcept;`
-		1. *Effects*: Equivalent to:<br>
-			`return basic_string_view<charT, traits>(data(), count);`
-
-## `std::basic_string::last` ## {#basicstringlast}
-Add the following subclause to 23.4.3.8 [string.ops](https://eel.is/c++draft/string.ops):<br>
-- 23.4.3.?:			`basic_string::last`			`[string.last]`
-	- `constexpr basic_string_view<charT, traits> last(size_t count) const noexcept;`
-		1. *Effects*: Equivalent to:<br>
-			`return basic_string_view<charT, traits>(data() + (size() - count), count);`
+		
 
 Acknowledgements {#acknowledgements}
 ========
