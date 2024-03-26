@@ -1490,7 +1490,7 @@ Possible extra rowspan handling
 </style>
   <meta content="Bikeshed version d765c696b, updated Fri Mar 8 15:58:52 2024 -0800" name="generator">
   <link href="TBA" rel="canonical">
-  <meta content="47ce70a9dbadbec7322bf6e2660bb8bb02fcfc79" name="revision">
+  <meta content="e29a6d36c45a0545aaf6ca97b567336c587a44ae" name="revision">
   <meta content="dark light" name="color-scheme">
 <style>/* Boilerplate: style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
@@ -2015,7 +2015,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"></p>
    <h1 class="p-name no-ref" id="title">DOCUMENT NUMBER? Adding string-slicing to C++</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="profile-and-date"><span class="content">Draft Proposal, <time class="dt-updated" datetime="2024-03-25">25 March 2024</time></span></h2>
+   <h2 class="no-num no-toc no-ref heading settled" id="profile-and-date"><span class="content">Draft Proposal, <time class="dt-updated" datetime="2024-03-26">26 March 2024</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -2154,14 +2154,21 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
      <p>Removed default parameter from <code class="highlight"><c- n>std</c-><c- o>::</c-><c- n>basic_string</c-><c- o>::</c-><c- n>slice</c-><c- p>(</c-><c- b>size_t</c-> <c- n>start</c-><c- p>,</c-> <c- b>size_t</c-> <c- n>end</c-><c- p>,</c-> <c- b>size_t</c-> <c- n>step</c-><c- p>)</c-></code>.<br></p>
    </ul>
    <h2 class="heading settled" data-level="3" id="motivation"><span class="secno">3. </span><span class="content">Motivation and Scope</span><a class="self-link" href="#motivation"></a></h2>
-    Parsing and string manipulation in C++ used to be very cumbersome, with seemingly basic and trivial methods missing from <code class="highlight"><c- n>std</c-><c- o>::</c-><c- n>basic_string</c-></code>. The introduction of C++20 and C++23 resolved some of these issues by adding the above listed utility functions.
-I believe we can make string manipulation in C++ even better by adding more of these utility functions to <code class="highlight"><c- n>std</c-><c- o>::</c-><c- n>basic_string</c-></code>, and one option I always miss, that is present in other programming languages (such as Python), is <em>string-slicing</em>.
-Python’s string-slicing is very graceful and easy-to-use, but C++ does not support that syntax.<br> Instead, I propose to add a <code class="highlight"><c- n>subview</c-><c- p>()</c-></code> function to <code class="highlight"><c- n>std</c-><c- o>::</c-><c- n>basic_string</c-></code> and <code class="highlight"><c- n>std</c-><c- o>::</c-><c- n>string_view</c-></code> to emulate string-slicing.<br> 
+    <s>Parsing and string manipulation in C++ used to be very cumbersome, with seemingly basic and trivial methods missing from <code class="highlight"><c- n>std</c-><c- o>::</c-><c- n>basic_string</c-></code>. The introduction of C++20 and C++23 resolved some of these issues by adding the above listed utility functions.<br> I believe we can make string manipulation in C++ even better by adding more of these utility functions to <code class="highlight"><c- n>std</c-><c- o>::</c-><c- n>basic_string</c-></code>, and one option I always miss, that is present in other programming languages (such as Python), is <em>string-slicing</em>.
+Python’s string-slicing is very graceful and easy-to-use, but C++ does not support that syntax.<br> Instead, I propose to add a <code class="highlight"><c- n>subview</c-><c- p>()</c-></code> function to <code class="highlight"><c- n>std</c-><c- o>::</c-><c- n>basic_string</c-></code> and <code class="highlight"><c- n>std</c-><c- o>::</c-><c- n>string_view</c-></code> to emulate string-slicing.</s><br> I think <code class="highlight"><c- p>.</c-><c- n>substr</c-><c- p>()</c-></code> can sometimes be a bit cumbersome to use, especially when the substring you’re trying to get is easily gotten via a start and end index, instead of a start and count.<br> <code class="highlight"><c- p>.</c-><c- n>subview</c-><c- p>()</c-></code> will be in function identical to <code class="highlight"><c- p>.</c-><c- n>substr</c-><c- p>()</c-></code>. Its main purpose is for variety in the API for programmers who prefer using <code class="highlight"><c- n>start</c-><c- p>,</c-> <c- n>end</c-></code> over <code class="highlight"><c- n>start</c-><c- p>,</c-> <c- n>count</c-></code>.<br> Why would we even want this? Take the following example: 
+<pre class="highlight"><c- k>const</c-> <c- n>std</c-><c- o>::</c-><c- n>string</c-> <c- n>google</c-><c- p>{</c-> <c- s>"www.google.com"</c-> <c- p>};</c->
+
+<c- c1>// Subview</c->
+<c- n>std</c-><c- o>::</c-><c- n>cout</c-> <c- o>&lt;&lt;</c-> <c- n>google</c-><c- p>.</c-><c- n>subview</c-><c- p>(</c-><c- n>google</c-><c- p>.</c-><c- n>find</c-><c- p>(</c-><c- sc>'.'</c-><c- p>)</c-> <c- o>+</c-> <c- mi>1</c-><c- p>,</c-> <c- n>google</c-><c- p>.</c-><c- n>find_last_of</c-><c- p>(</c-><c- sc>'.'</c-><c- p>))</c-> <c- o>&lt;&lt;</c-> <c- s>"</c-><c- se>\n</c-><c- s>"</c-><c- p>;</c->
+
+<c- c1>// Substr</c->
+<c- b>size_t</c-> <c- n>start</c-> <c- o>=</c-> <c- n>google</c-><c- p>.</c-><c- n>find</c-><c- p>(</c-><c- sc>'.'</c-><c- p>)</c-> <c- o>+</c-> <c- mi>1</c-><c- p>;</c->
+<c- n>std</c-><c- o>::</c-><c- n>cout</c-> <c- o>&lt;&lt;</c-> <c- n>google</c-><c- p>.</c-><c- n>substr</c-><c- p>(</c-><c- n>start</c-><c- p>,</c-> <c- n>google</c-><c- p>.</c-><c- n>find_last_of</c-><c- p>(</c-><c- sc>'.'</c-><c- p>)</c-> <c- o>-</c-> <c- n>start</c-><c- p>)</c-> <c- o>&lt;&lt;</c-> <c- s>"</c-><c- se>\n</c-><c- s>"</c-><c- p>;</c->
+</pre>
+   <p>Both do functionally the same thing, but <code class="highlight"><c- p>.</c-><c- n>substr</c-><c- p>()</c-></code> requires a calculation to get the length <strong>and</strong> a need to store <code class="highlight"><c- n>start</c-></code> since we need it to calculate the length of the substring (although this is not technically necessary, not doing so leads to code duplication), while <code class="highlight"><c- p>.</c-><c- n>subview</c-><c- p>()</c-></code> can simply pass the same start and just <code class="highlight"><c- p>.</c-><c- n>find_last_of</c-><c- p>()</c-></code> instead of having to calculate a length.</p>
+   <p>At the end of the day, this is more about adding to the richness of the API and making the API nicer for some programmers than it is about replacing <code class="highlight"><c- p>.</c-><c- n>substr</c-><c- p>()</c-></code> or creating entirely new functionality.</p>
    <h2 class="heading settled" data-level="4" id="impact"><span class="secno">4. </span><span class="content">Impact on the Standard</span><a class="self-link" href="#impact"></a></h2>
     Since these are only trivial functions requiring no major changes to the language or changes to existing API, the impact of this proposal on the standard is minimal.<br> These functions can already be implemented in the current version of C++23 without any extra changes.<br> 
-   <p>In my opinion, teachability is not a problem. There might be some beginners who might be confused by the existance of <code class="highlight"><c- p>.</c-><c- n>subview</c-><c- p>()</c-></code> in addition to <code class="highlight"><c- p>.</c-><c- n>substr</c-><c- p>()</c-></code> and wonder why 2 almost identical functions exist.
-Although, this is true, and <code class="highlight"><c- p>.</c-><c- n>subview</c-><c- p>()</c-></code> adds no new functionality over <code class="highlight"><c- p>.</c-><c- n>substr</c-><c- p>()</c-></code>, it does add another option for programmers doing string manipulation that might be more intuitive to some than <code class="highlight"><c- p>.</c-><c- n>substr</c-><c- p>(</c-><c- n>start</c-><c- p>,</c-> <c- n>count</c-><c- p>)</c-></code>.</p>
-   <p>On the topic of confusing functions, the C++ standard library is full of similar functions that could make teachability worse (<code class="highlight"><c- n>std</c-><c- o>::</c-><c- n>begin</c-><c- p>()</c-></code> vs <code class="highlight"><c- p>.</c-><c- n>begin</c-><c- p>()</c-></code>), but are left in for compatibility reasons.<br> I think the teachability impact of <code class="highlight"><c- p>.</c-><c- n>subview</c-><c- p>()</c-></code> is very minor, and adds an alternative for people coming from other languages (Rust, Python, ...) where string-slicing works in the way of <code class="highlight"><c- p>(</c-><c- n>start</c-><c- p>,</c-> <c- n>end</c-><c- p>)</c-></code>.</p>
    <p>Implementation will be left up to the vendor of course, but since these are trivial functions, we can provide a "template" implementation.</p>
    <h2 class="heading settled" data-level="5" id="technical"><span class="secno">5. </span><span class="content">Technical Specifications</span><a class="self-link" href="#technical"></a></h2>
    <ol>

@@ -63,21 +63,31 @@ Changelog {#changelog}
 
 Motivation and Scope {#motivation}
 ========
-Parsing and string manipulation in C++ used to be very cumbersome, with seemingly basic and trivial methods missing from `std::basic_string`. The introduction of C++20 and C++23 resolved some of these issues by adding the above listed utility functions.
+<s>Parsing and string manipulation in C++ used to be very cumbersome, with seemingly basic and trivial methods missing from `std::basic_string`. The introduction of C++20 and C++23 resolved some of these issues by adding the above listed utility functions.<br>
 I believe we can make string manipulation in C++ even better by adding more of these utility functions to `std::basic_string`, and one option I always miss, that is present in other programming languages (such as Python), is *string-slicing*.
 Python's string-slicing is very graceful and easy-to-use, but C++ does not support that syntax.<br>
-Instead, I propose to add a `subview()` function to `std::basic_string` and `std::string_view` to emulate string-slicing.<br>
+Instead, I propose to add a `subview()` function to `std::basic_string` and `std::string_view` to emulate string-slicing.</s><br>
+I think `.substr()` can sometimes be a bit cumbersome to use, especially when the substring you're trying to get is easily gotten via a start and end index, instead of a start and count.<br>
+`.subview()` will be in function identical to `.substr()`. Its main purpose is for variety in the API for programmers who prefer using `start, end` over `start, count`.<br>
+Why would we even want this? Take the following example:
+```
+const std::string google{ "www.google.com" };
+
+// Subview
+std::cout << google.subview(google.find('.') + 1, google.find_last_of('.')) << "\n";
+
+// Substr
+size_t start = google.find('.') + 1;
+std::cout << google.substr(start, google.find_last_of('.') - start) << "\n";
+```
+Both do functionally the same thing, but `.substr()` requires a calculation to get the length **and** a need to store `start` since we need it to calculate the length of the substring (although this is not technically necessary, not doing so leads to code duplication), while `.subview()` can simply pass the same start and just `.find_last_of()` instead of having to calculate a length.
+
+At the end of the day, this is more about adding to the richness of the API and making the API nicer for some programmers than it is about replacing `.substr()` or creating entirely new functionality.
 
 Impact on the Standard {#impact}
 ========
 Since these are only trivial functions requiring no major changes to the language or changes to existing API, the impact of this proposal on the standard is minimal.<br>
 These functions can already be implemented in the current version of C++23 without any extra changes.<br>
-
-In my opinion, teachability is not a problem. There might be some beginners who might be confused by the existance of `.subview()` in addition to `.substr()` and wonder why 2 almost identical functions exist.
-Although, this is true, and `.subview()` adds no new functionality over `.substr()`, it does add another option for programmers doing string manipulation that might be more intuitive to some than `.substr(start, count)`.
-
-On the topic of confusing functions, the C++ standard library is full of similar functions that could make teachability worse (`std::begin()` vs `.begin()`), but are left in for compatibility reasons.<br>
-I think the teachability impact of `.subview()` is very minor, and adds an alternative for people coming from other languages (Rust, Python, ...) where string-slicing works in the way of `(start, end)`.
 
 Implementation will be left up to the vendor of course, but since these are trivial functions, we can provide a "template" implementation.
 
