@@ -1490,7 +1490,7 @@ Possible extra rowspan handling
 </style>
   <meta content="Bikeshed version d765c696b, updated Fri Mar 8 15:58:52 2024 -0800" name="generator">
   <link href="TBA" rel="canonical">
-  <meta content="e29a6d36c45a0545aaf6ca97b567336c587a44ae" name="revision">
+  <meta content="9a97311c556c9ce1deb6f72b790388ddd1314f7d" name="revision">
   <meta content="dark light" name="color-scheme">
 <style>/* Boilerplate: style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
@@ -2173,7 +2173,25 @@ Python’s string-slicing is very graceful and easy-to-use, but C++ does not sup
    <h2 class="heading settled" data-level="5" id="technical"><span class="secno">5. </span><span class="content">Technical Specifications</span><a class="self-link" href="#technical"></a></h2>
    <ol>
     <li data-md>
-     <p><code class="highlight"><c- n>std</c-><c- o>::</c-><c- n>basic_string</c-><c- o>::</c-><c- n>slice</c-><c- p>()</c-></code> takes 2 parameters: <code class="highlight"><c- b>size_t</c-> <c- n>start</c-></code> and <code class="highlight"><c- b>size_t</c-> <c- n>end</c-></code> and returns a <code class="highlight"><c- n>std</c-><c- o>::</c-><c- n>basic_string_view</c-></code>.</p>
+     <p><code class="highlight"><c- n>std</c-><c- o>::</c-><c- n>basic_string</c-><c- o>::</c-><c- n>subview</c-><c- p>()</c-></code> takes 2 parameters: <code class="highlight"><c- b>size_t</c-> <c- n>start</c-></code> and <code class="highlight"><c- b>size_t</c-> <c- n>end</c-></code> and returns a <code class="highlight"><c- n>std</c-><c- o>::</c-><c- n>basic_string</c-></code>.</p>
+     <ul>
+      <li data-md>
+       <p><code class="highlight"><c- n>start</c-></code> is the starting index (inclusive) of where to start the slice.</p>
+       <ul>
+        <li data-md>
+         <p><code class="highlight"><c- n>std</c-><c- o>::</c-><c- n>out_of_range</c-></code> is thrown when <code class="highlight"><c- n>start</c-> <c- o>>=</c-> <c- n>size</c-><c- p>()</c-></code>.</p>
+       </ul>
+      <li data-md>
+       <p><code class="highlight"><c- n>end</c-></code> is the ending index (exclusive) of where to end the slice.</p>
+       <ul>
+        <li data-md>
+         <p>if <code class="highlight"><c- n>end</c-> <c- o>></c-> <c- n>size</c-><c- p>()</c-></code> then <code class="highlight"><c- n>end</c-></code> will be set to <code class="highlight"><c- n>size</c-><c- p>()</c-></code></p>
+        <li data-md>
+         <p>if <code class="highlight"><c- n>end</c-> <c- o>&lt;</c-> <c- n>start</c-></code> then <code class="highlight"><c- n>end</c-></code> will be set to <code class="highlight"><c- n>start</c-></code></p>
+       </ul>
+     </ul>
+    <li data-md>
+     <p><code class="highlight"><c- n>std</c-><c- o>::</c-><c- n>basic_string_view</c-><c- o>::</c-><c- n>subview</c-><c- p>()</c-></code> takes 2 parameters: <code class="highlight"><c- b>size_t</c-> <c- n>start</c-></code> and <code class="highlight"><c- b>size_t</c-> <c- n>end</c-></code> and returns a <code class="highlight"><c- n>std</c-><c- o>::</c-><c- n>basic_string_view</c-></code>.</p>
      <ul>
       <li data-md>
        <p><code class="highlight"><c- n>start</c-></code> is the starting index (inclusive) of where to start the slice.</p>

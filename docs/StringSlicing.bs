@@ -93,7 +93,13 @@ Implementation will be left up to the vendor of course, but since these are triv
 
 Technical Specifications {#technical}
 ========
-1. `std::basic_string::slice()` takes 2 parameters: `size_t start` and `size_t end` and returns a `std::basic_string_view`.
+1. `std::basic_string::subview()` takes 2 parameters: `size_t start` and `size_t end` and returns a `std::basic_string`.
+	- `start` is the starting index (inclusive) of where to start the slice.
+		- `std::out_of_range` is thrown when `start >= size()`.
+	- `end` is the ending index (exclusive) of where to end the slice.
+		- if `end > size()` then `end` will be set to `size()`
+		- if `end < start` then `end` will be set to `start`
+2. `std::basic_string_view::subview()` takes 2 parameters: `size_t start` and `size_t end` and returns a `std::basic_string_view`.
 	- `start` is the starting index (inclusive) of where to start the slice.
 		- `std::out_of_range` is thrown when `start >= size()`.
 	- `end` is the ending index (exclusive) of where to end the slice.
